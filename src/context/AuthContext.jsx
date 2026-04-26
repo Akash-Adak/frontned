@@ -17,6 +17,16 @@ const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
+const shouldUseRedirectForGoogleSignIn = () => {
+  if (typeof navigator === "undefined") return false;
+
+  const userAgent = navigator.userAgent || "";
+  const isEdge = /Edg\//i.test(userAgent) || /Edge\//i.test(userAgent);
+  const isMobile = /Android|iPhone|iPad|iPod|Mobi/i.test(userAgent);
+
+  return isEdge || isMobile;
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -63,6 +73,12 @@ export const AuthProvider = ({ children }) => {
 
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+
+    if (shouldUseRedirectForGoogleSignIn()) {
+      await signInWithRedirect(auth, provider);
+      return null;
+    }
+
     try {
       const userCredential = await signInWithPopup(auth, provider);
       await syncUserToSheet(userCredential.user, "google");

@@ -44,7 +44,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      window.location.replace('/');
     }
   }, [user, navigate]);
 
@@ -66,7 +66,7 @@ const Login = () => {
       setError('');
       const userCredential = await loginWithGoogle();
       if (userCredential) {
-        navigate('/');
+        window.location.replace('/');
       }
     } catch (err) {
       setError(getGoogleAuthErrorMessage(err));
