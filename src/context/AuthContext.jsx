@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!isMounted) return;
       setUser(user);
+      setLoading(false);
     });
 
     getRedirectResult(auth)
@@ -38,11 +39,6 @@ export const AuthProvider = ({ children }) => {
       .catch((error) => {
         if (error?.code !== "auth/no-auth-event") {
           console.warn("Firebase redirect sign-in result error:", error);
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setLoading(false);
         }
       });
 
