@@ -4,6 +4,36 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, User, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+const getGoogleAuthErrorMessage = (err) => {
+  const code = err?.code || '';
+
+  if (code === 'auth/unauthorized-domain') {
+    return 'This domain is not authorized in Firebase. Add your Vercel domain in Firebase Auth > Settings > Authorized domains.';
+  }
+
+  if (code === 'auth/operation-not-allowed') {
+    return 'Google provider is disabled in Firebase Authentication. Enable Google sign-in method.';
+  }
+
+  if (code === 'auth/popup-closed-by-user') {
+    return 'Google popup was closed before completing sign-in.';
+  }
+
+  if (code === 'auth/popup-blocked') {
+    return 'Popup was blocked by the browser. Allow popups for this site and try again.';
+  }
+
+  if (code === 'auth/invalid-api-key') {
+    return 'Firebase API key is invalid. Verify VITE_FIREBASE_API_KEY in Vercel environment variables.';
+  }
+
+  if (code === 'auth/network-request-failed') {
+    return 'Network error during Google sign-in. Check internet connection and CORS/domain settings.';
+  }
+
+  return err?.message || 'Google Sign-up failed.';
+};
+
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -32,7 +62,7 @@ const Register = () => {
       await loginWithGoogle();
       navigate('/');
     } catch (err) {
-      setError('Google Sign-in failed.');
+      setError(getGoogleAuthErrorMessage(err));
     }
   };
 
