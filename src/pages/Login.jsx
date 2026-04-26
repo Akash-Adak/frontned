@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react';
@@ -39,8 +39,14 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, loginWithGoogle } = useAuth();
+  const { user, login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,8 +64,10 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       setError('');
-      await loginWithGoogle();
-      navigate('/');
+      const userCredential = await loginWithGoogle();
+      if (userCredential) {
+        navigate('/');
+      }
     } catch (err) {
       setError(getGoogleAuthErrorMessage(err));
     }
